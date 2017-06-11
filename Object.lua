@@ -38,6 +38,7 @@ function Object.Proto()
     __variables = {},
     __methods = {},
     __static = {},
+    __name = {},
 
     Add_Custom_Property = function (self, name, val, getter, setter)
       self:Add_Variable(name, val)
@@ -132,8 +133,9 @@ Object.Meta = {
 }
 
 local meta = {
-  __call = function ()
+  __call = function (name)
     local obj = Object.Proto()
+    obj.__name = name
     setmetatable(obj, Util.deep_copy(Object.Meta))
     return obj
   end,
