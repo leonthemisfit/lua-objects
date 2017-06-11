@@ -23,8 +23,16 @@ Queue:Add_Method("Pop", function (self)
   end
 end)
 
-Queue:Add_Method("List", function (self)
-  table.list(self.__variables.queue)
+Queue:Set_Meta("tostring", function (self)
+  return "Hello, world!"
+end)
+
+Queue:Set_Meta("add", function (self, object)
+  self:Push(object)
+end)
+
+Queue:Set_Meta("unm", function (self)
+  return self:Pop()
 end)
 
 return Queue
