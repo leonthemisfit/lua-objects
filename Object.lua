@@ -80,7 +80,7 @@ function Object.Proto()
     Set_Meta = function (self, name, val)
       local raw_name = Meta_Setters[name]
       if raw_name then
-        local meta = table.deep_copy(getmetatable(self))
+        local meta = getmetatable(self)
         meta[raw_name] = val
         setmetatable(self, meta)
         return true
@@ -96,7 +96,7 @@ function Object.Proto()
       obj.__setters = table.deep_copy(self.__setters)
       obj.__methods = table.deep_copy(self.__methods)
       obj.__static = self.__static
-      setmetatable(obj, Object.Meta)
+      setmetatable(obj, table.deep_copy(Object.Meta))
       return obj
     end
   }
