@@ -88,6 +88,10 @@ function Object.Proto()
       end
     end,
 
+    Is_Instance = function (self, tbl)
+      return getmetatable(self) == getmetatable(tbl)
+    end,
+
     New = function(self)
       local obj = {}
       obj.__variables = table.deep_copy(self.__variables)
