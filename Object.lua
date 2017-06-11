@@ -96,7 +96,7 @@ function Object.Proto()
       obj.__setters = table.deep_copy(self.__setters)
       obj.__methods = table.deep_copy(self.__methods)
       obj.__static = self.__static
-      setmetatable(obj, Object.Meta)
+      setmetatable(obj, table.deep_copy(Object.Meta))
       return obj
     end
   }
