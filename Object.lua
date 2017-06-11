@@ -1,4 +1,4 @@
-local util = require("Util")
+local Util = require("Util")
 
 local Defaults = {
   GETTER = function (tbl, key)

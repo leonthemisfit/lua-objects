@@ -12,7 +12,7 @@ function Util.rest(tbl)
   if #tbl < 2 then
     return {}
   else
-    return table.slice(tbl, 2)
+    return Util.slice(tbl, 2)
   end
 end
 
@@ -20,7 +20,7 @@ function Util.deep_copy(old_table, new_table)
   new_table = new_table or {}
   for k,v in pairs(old_table) do
     if type(v) == "table" then
-      new_table[k] = table.deep_copy(v)
+      new_table[k] = Util.deep_copy(v)
     else
       new_table[k] = v
     end
@@ -33,3 +33,5 @@ function Util.list(tbl)
     print(tostring(k) .. ": " .. tostring(v))
   end
 end
+
+return Util
