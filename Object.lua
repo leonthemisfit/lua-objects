@@ -38,7 +38,7 @@ function Object.Proto()
     __variables = {},
     __methods = {},
     __static = {},
-    __name = {},
+    __name = "",
 
     Add_Custom_Property = function (self, name, val, getter, setter)
       self:Add_Variable(name, val)
