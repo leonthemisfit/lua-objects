@@ -1,21 +1,25 @@
 local Util = require("Util")
 
+local Errors = {
+  KEY_EXISTS = "The key you are attempting to add already exists in object.",
+  KEY_VIOLATION = "Keys cannot be added to the onject with dot notation.",
+  READONLY = "This property is readonly and cannot be assigned to."
+}
+
 local Defaults = {
   GETTER = function (tbl, key)
     return tbl.__variables[key]
   end,
+
   SETTER = function (tbl, key, val)
     tbl.__variables[key] = val
   end,
+
   READONLY = function (...)
-    error("This property is readonly.")
+    error(Errors.READONLY)
   end
 }
 
-local Errors = {
-  KEY_EXISTS = "The key you are attempting to add already exists in object.",
-  KEY_VIOLATION = "Keys cannot be added to the onject with dot notation."
-}
 
 local Meta_Setters = {
   tostring = "__tostring",
