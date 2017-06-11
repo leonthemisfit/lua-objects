@@ -80,7 +80,7 @@ function Object.Proto()
     Set_Meta = function (self, name, val)
       local raw_name = Meta_Setters[name]
       if raw_name then
-        local meta = getmetatable(self)
+        local meta = table.deep_copy(getmetatable(self))
         meta[raw_name] = val
         setmetatable(self, meta)
         return true
