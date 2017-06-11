@@ -1,7 +1,7 @@
 local Object = require("Object")
 local Util = require("Util")
 
-local Queue = Object()
+local Queue = Object("Queue")
 
 Queue:Add_Variable("queue", {})
 
