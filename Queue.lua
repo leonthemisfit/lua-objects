@@ -1,4 +1,5 @@
 local Object = require("Object")
+local Util = require("Util")
 
 local Queue = Object()
 
@@ -17,7 +18,7 @@ Queue:Add_Method("Pop", function (self)
     return nil
   else
     local val = self.__variables.queue[1]
-    local tbl = table.rest(self.__variables.queue)
+    local tbl = Util.rest(self.__variables.queue)
     self.__variables.queue = tbl
     return val
   end
