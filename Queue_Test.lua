@@ -1,0 +1,11 @@
+local Queue = require("Queue")
+
+local queue = Queue()
+print(queue.Length)
+queue:Push("A")
+print(queue.Length)
+queue:Push("B")
+queue:List()
+print(queue:Pop())
+print(queue:Pop())
+print(queue.Length)
