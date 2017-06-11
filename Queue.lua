@@ -23,6 +23,10 @@ Queue:Add_Method("Pop", function (self)
   end
 end)
 
+Queue:Add_Static_Method("Hello", function ()
+  return "Hello, world!"
+end)
+
 Queue:Set_Meta("tostring", function (self)
   return "Hello, world!"
 end)
