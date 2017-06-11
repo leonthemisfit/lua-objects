@@ -82,7 +82,6 @@ function Object.Proto()
       if raw_name then
         local meta = getmetatable(self)
         meta[raw_name] = val
-        setmetatable(self, meta)
         return true
       else
         return false
