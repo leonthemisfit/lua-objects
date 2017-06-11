@@ -94,10 +94,10 @@ function Object.Proto()
 
     New = function(self)
       local obj = {}
-      obj.__variables = table.deep_copy(self.__variables)
-      obj.__getters = table.deep_copy(self.__getters)
-      obj.__setters = table.deep_copy(self.__setters)
-      obj.__methods = table.deep_copy(self.__methods)
+      obj.__variables = Util.deep_copy(self.__variables)
+      obj.__getters = Util.deep_copy(self.__getters)
+      obj.__setters = Util.deep_copy(self.__setters)
+      obj.__methods = Util.deep_copy(self.__methods)
       obj.__static = self.__static
       setmetatable(obj, getmetatable(self))
       return obj
@@ -134,7 +134,7 @@ Object.Meta = {
 local meta = {
   __call = function ()
     local obj = Object.Proto()
-    setmetatable(obj, table.deep_copy(Object.Meta))
+    setmetatable(obj, Util.deep_copy(Object.Meta))
     return obj
   end,
 
