@@ -12,6 +12,23 @@ local Defaults = {
   end
 }
 
+local Meta_Setters = {
+  tostring = "__tostring",
+  len = "__len",
+  gc = "__gc",
+  unm = "__unm",
+  add = "__add",
+  sub = "__sub",
+  mul = "__mul",
+  div = "__div",
+  mod = "__mod",
+  pow = "__pow",
+  concat = "__concat",
+  eq = "__eq",
+  lt = "__lt",
+  le = "__le"
+}
+
 local Object = {}
 
 function Object.Proto()
@@ -53,6 +70,18 @@ function Object.Proto()
 
     Add_Setter = function (self, name, func)
       self.__setters[name] = func
+    end,
+
+    Set_Meta = function (self, name, val)
+      local raw_name = Meta_Setters[name]
+      if raw_name then
+        local meta = getmetatable(self)
+        meta[raw_name] = val
+        setmetatable(self, meta)
+        return true
+      else
+        return false
+      end
     end,
 
     New = function(self)
