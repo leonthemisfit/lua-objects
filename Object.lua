@@ -133,7 +133,7 @@ Object.Meta = {
 }
 
 local meta = {
-  __call = function (name)
+  __call = function (tbl, name)
     local obj = Object.Proto()
     obj.__name = name
     setmetatable(obj, Util.deep_copy(Object.Meta))
