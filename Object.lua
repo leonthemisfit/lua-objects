@@ -12,6 +12,11 @@ local Defaults = {
   end
 }
 
+local Errors = {
+  KEY_EXISTS = "The key you are attempting to add already exists in object.",
+  KEY_VIOLATION = "Keys cannot be added to the onject with dot notation."
+}
+
 local Meta_Setters = {
   tostring = "__tostring",
   len = "__len",
@@ -59,22 +64,37 @@ function Object.Proto()
     end,
 
     Add_Method = function (self, name, func)
+      if self.__methods[name] then
+        error(Errors.KEY_EXISTS)
+      end
       self.__methods[name] = func
     end,
 
     Add_Variable = function (self, name, val)
+      if self.__variables[name] then
+        error(Erros.KEY_EXISTS)
+      end
       self.__variables[name] = val
     end,
 
     Add_Getter = function (self, name, func)
+      if self.__getters[name] then
+        error(Errors.KEY_EXISTS)
+      end
       self.__getters[name] = func
     end,
 
     Add_Setter = function (self, name, func)
+      if self.__setters[name] then
+        error(Errors.KEY_EXISTS)
+      end
       self.__setters[name] = func
     end,
 
     Add_Static_Method = function (self, name, func)
+      if self.__static[name] then
+        error(Errors.KEY_EXISTS)
+      end
       self.__static[name] = func
     end,
 
@@ -127,7 +147,7 @@ Object.Meta = {
     if tbl.__setters[key] then
       tbl.__setters[key](tbl, key, val)
     else
-      error("Keys cannot be added to object this way.")
+      error(Errors.KEY_VIOLATION)
     end
   end
 }
@@ -141,7 +161,7 @@ local meta = {
   end,
 
   __newindex = function (tbl, key, val)
-    error("Keys cannot be added to object this way.")
+    error(Errors.KEY_VIOLATION)
   end
 }
 
