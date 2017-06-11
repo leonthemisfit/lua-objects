@@ -37,6 +37,7 @@ function Object.Proto()
     __setters = {},
     __variables = {},
     __methods = {},
+    __static = {},
 
     Add_Custom_Property = function (self, name, val, getter, setter)
       self:Add_Variable(name, val)
@@ -72,6 +73,10 @@ function Object.Proto()
       self.__setters[name] = func
     end,
 
+    Add_Static_Method = function (self, name, func)
+      self.__static[name] = func
+    end,
+
     Set_Meta = function (self, name, val)
       local raw_name = Meta_Setters[name]
       if raw_name then
@@ -90,6 +95,7 @@ function Object.Proto()
       obj.__getters = table.deep_copy(self.__getters)
       obj.__setters = table.deep_copy(self.__setters)
       obj.__methods = table.deep_copy(self.__methods)
+      obj.__static = self.__static
       setmetatable(obj, Object.Meta)
       return obj
     end
@@ -106,6 +112,8 @@ Object.Meta = {
       return tbl.__getters[key](tbl, key)
     elseif tbl.__methods[key] then
       return tbl.__methods[key]
+    elseif tbl.__static[key] then
+      return tbl.__static[key]
     else
       return nil
     end
