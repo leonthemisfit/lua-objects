@@ -1,4 +1,5 @@
 local Queue = require("Queue")
+local Util = require("Util")
 
 local queue = Queue()
 
@@ -20,5 +21,7 @@ assert(queue.Length == 0)
 assert(tostring(queue) == "Hello, world!")
 assert(queue.Hello() == "Hello, world!")
 assert(Queue.Hello() == "Hello, world!")
-assert(queue.hello == Queue.hello)
+assert(queue.Hello == Queue.Hello)
 assert(Queue:Is_Instance(queue))
+assert(queue:overloaded("test") == "test", queue:overloaded("test"))
+assert(queue:overloaded("test", 2) == "test test")

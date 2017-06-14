@@ -40,4 +40,16 @@ Queue:Set_Meta("unm", function (self)
   return self:Pop()
 end)
 
+Queue:Add_Overloaded_Method("overloaded", {"table", "string"}, function (self, s)
+  return s
+end)
+
+Queue:Add_Overloaded_Method("overloaded", {"table", "string", "number"}, function (self, s, n)
+  local t = {}
+  for i = 1, n do
+    t[i] = s
+  end
+  return table.concat(t, " ")
+end)
+
 return Queue
