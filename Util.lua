@@ -28,10 +28,34 @@ function Util.deep_copy(old_table, new_table)
   return new_table
 end
 
+function Util.deep_copy_meta(old_table, meta_table, new_table)
+  new_table = new_table or {}
+  for k,v in pairs(old_table) do
+    if type(v) == "table" then
+      new_table[k] = setmetatable(Util.deep_copy(v), Util.deep_copy(meta_table))
+    else
+      new_table[k] = v
+    end
+  end
+  return new_table
+end
+
 function Util.list(tbl)
   for k,v in pairs(tbl) do
     print(tostring(k) .. ": " .. tostring(v))
   end
+end
+
+function Util.signature_from_table(tbl)
+  return table.concat(tbl, ".")
+end
+
+function Util.signature(...)
+  local tbl = {}
+  for i,v in ipairs(table.pack(...)) do
+    tbl[i] = type(v)
+  end
+  return Util.signature_from_table(tbl)
 end
 
 return Util

@@ -3,7 +3,9 @@ local Util = require("Util")
 local Errors = {
   KEY_EXISTS = "The key you are attempting to add already exists in object.",
   KEY_VIOLATION = "Keys cannot be added to the onject with dot notation.",
-  READONLY = "This property is readonly and cannot be assigned to."
+  READONLY = "This property is readonly and cannot be assigned to.",
+  BAD_SIGNATURE = "The method call did not match any known signature.",
+  SIGNATURE_EXISTS = "The signature supplied already exists in the object."
 }
 
 local Defaults = {
@@ -17,7 +19,7 @@ local Defaults = {
 
   READONLY = function (...)
     error(Errors.READONLY)
-  end
+  end,
 }
 
 
@@ -38,6 +40,26 @@ local Meta_Setters = {
   le = "__le"
 }
 
+local Signature = {}
+
+local Sig_Meta = {
+  __call = function (tbl, ...)
+    local sig = Util.signature(...)
+    if tbl.__sigs and tbl.__sigs[sig] then
+      return tbl.__sigs[sig](...)
+    else
+      error(Errors.BAD_SIGNATURE)
+    end
+  end
+}
+
+function Signature.Proto()
+  local sig = {
+    __sigs = {}
+  }
+  return sig
+end
+
 local Object = {}
 
 function Object.Proto()
@@ -47,6 +69,7 @@ function Object.Proto()
     __variables = {},
     __methods = {},
     __static = {},
+    __overloads = {},
     __name = "",
 
     Add_Custom_Property = function (self, name, val, getter, setter)
@@ -102,6 +125,19 @@ function Object.Proto()
       self.__static[name] = func
     end,
 
+    Add_Overloaded_Method = function (self, name, sig_table, func)
+      if not self.__overloads[name] then
+        self.__overloads[name] = Signature.Proto()
+      end
+
+      local sig = Util.signature_from_table(sig_table)
+      if self.__overloads[name].__sigs[sig] then
+        error(Errors.SIGNATURE_EXISTS)
+      end
+
+      self.__overloads[name].__sigs[sig] = func
+    end,
+
     Set_Meta = function (self, name, val)
       local raw_name = Meta_Setters[name]
       if raw_name then
@@ -123,6 +159,7 @@ function Object.Proto()
       obj.__getters = Util.deep_copy(self.__getters)
       obj.__setters = Util.deep_copy(self.__setters)
       obj.__methods = Util.deep_copy(self.__methods)
+      obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
       obj.__static = self.__static
       setmetatable(obj, getmetatable(self))
       return obj
@@ -142,6 +179,8 @@ Object.Meta = {
       return tbl.__methods[key]
     elseif tbl.__static[key] then
       return tbl.__static[key]
+    elseif tbl.__overloads[key] then
+      return tbl.__overloads[key]
     else
       return nil
     end
