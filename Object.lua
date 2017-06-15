@@ -62,14 +62,13 @@ end
 local Object = {}
 
 function Object.Proto()
-  return {
+  local proto = {
     __getters = {},
     __setters = {},
     __variables = {},
     __methods = {},
     __static = {},
     __overloads = {},
-    __indexed = {__getters, __methods, __static, __overloads},
     __name = "",
 
     Validate_Index_Key = function (self, key)
@@ -179,6 +178,9 @@ function Object.Proto()
       return obj
     end
   }
+  proto.__indexed =
+    {proto.__getters, proto.__methods, proto.__static, proto.__overloads}
+  return proto
 end
 
 Object.Meta = {
@@ -188,21 +190,10 @@ Object.Meta = {
 
   __index = function(tbl, key)
     if tbl.__getters[key] then
-      print("getter found")
       return tbl.__getters[key](tbl, key)
-    --[[elseif tbl.__methods[key] then
-      return tbl.__methods[key]
-    elseif tbl.__static[key] then
-      return tbl.__static[key]
-    elseif tbl.__overloads[key] then
-      return tbl.__overloads[key]
     else
-      return nil]]
-    else
-      print("not a getter")
-      for _, tbl in ipairs(tbl.__indexed) do
-        print("Checking Tables")
-        if tbl[key] then return tbl[key] end
+      for _, itbl in ipairs(tbl.__indexed) do
+        if itbl[key] then return itbl[key] end
       end
     end
   end,
