@@ -69,7 +69,24 @@ function Object.Proto()
     __methods = {},
     __static = {},
     __overloads = {},
+    __indexed = {__getters, __methods, __static, __overloads},
     __name = "",
+
+    Validate_Index_Key = function (self, key)
+      for _,tbl in ipairs(self.__indexed) do
+        if tbl[id] then
+          error(Errors.KEY_EXISTS)
+        end
+      end
+    end,
+
+    Validate_Overload_Key = function (self, key)
+      for _,tbl in ipairs(self.__indexed) do
+        if (tbl ~= self.__overloads and tbl[key]) then
+          error(Errors.KEY_EXISTS)
+        end
+      end
+    end,
 
     Add_Custom_Property = function (self, name, val, getter, setter)
       self:Add_Variable(name, val)
@@ -90,9 +107,7 @@ function Object.Proto()
     end,
 
     Add_Method = function (self, name, func)
-      if self.__methods[name] then
-        error(Errors.KEY_EXISTS)
-      end
+      self:Validate_Index_Key(name)
       self.__methods[name] = func
     end,
 
@@ -104,9 +119,7 @@ function Object.Proto()
     end,
 
     Add_Getter = function (self, name, func)
-      if self.__getters[name] then
-        error(Errors.KEY_EXISTS)
-      end
+      self:Validate_Index_Key(name)
       self.__getters[name] = func
     end,
 
@@ -118,13 +131,13 @@ function Object.Proto()
     end,
 
     Add_Static_Method = function (self, name, func)
-      if self.__static[name] then
-        error(Errors.KEY_EXISTS)
-      end
+      self:Validate_Index_Key(name)
       self.__static[name] = func
     end,
 
     Add_Overloaded_Method = function (self, name, sig_table, func)
+      self:Validate_Overload_Key(name)
+
       if not self.__overloads[name] then
         self.__overloads[name] = Signature.Proto()
       end
@@ -160,6 +173,8 @@ function Object.Proto()
       obj.__methods = Util.deep_copy(self.__methods)
       obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
       obj.__static = self.__static
+      obj.__indexed =
+        {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
       return obj
     end
@@ -173,15 +188,22 @@ Object.Meta = {
 
   __index = function(tbl, key)
     if tbl.__getters[key] then
+      print("getter found")
       return tbl.__getters[key](tbl, key)
-    elseif tbl.__methods[key] then
+    --[[elseif tbl.__methods[key] then
       return tbl.__methods[key]
     elseif tbl.__static[key] then
       return tbl.__static[key]
     elseif tbl.__overloads[key] then
       return tbl.__overloads[key]
     else
-      return nil
+      return nil]]
+    else
+      print("not a getter")
+      for _, tbl in ipairs(tbl.__indexed) do
+        print("Checking Tables")
+        if tbl[key] then return tbl[key] end
+      end
     end
   end,
 
