@@ -193,7 +193,9 @@ Object.Meta = {
       return tbl.__getters[key](tbl, key)
     else
       for _, itbl in ipairs(tbl.__indexed) do
-        if itbl[key] then return itbl[key] end
+        if itbl[key] then
+          return itbl[key]
+        end
       end
     end
   end,
