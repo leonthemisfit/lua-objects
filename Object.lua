@@ -179,23 +179,23 @@ function Object.Proto()
 
       self.__inheritors[obj.__name] = true
 
-      for prop,tbl in pairs(obj.__inherited) do
+      for i,tbl in ipairs(obj.__inherited) do
         for k,v in pairs(tbl) do
-          if prop == "__getters" then
+          if tbl == obj.__getters then
             self:Add_Getter(k, v)
-          elseif prop == "__setters" then
+          elseif tbl == obj.__setters then
             self:Add_Setter(k, v)
-          elseif prop == "__variables" then
+          elseif tbl == obj.__variables then
             self:Add_Variable(k, v)
-          elseif prop == "__methods" then
+          elseif tbl == obj.__methods then
             self:Add_Method(k, v)
-          elseif prop == "__static" then
+          elseif tbl == obj.__static then
             self:Add_Static_Method(k, v)
-          elseif prop == "__overloads" then
+          elseif tbl == obj.__overloads then
             for sig,func in ipairs(v.__sigs) do
               self:Add_Overloaded_Method(k, Util.split(sig, "."), func)
             end
-          elseif prop == "__inheritors" then
+          elseif tbl == obj.__inheritors then
             self.__inheritors[k] = true
           end
         end
