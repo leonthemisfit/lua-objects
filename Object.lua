@@ -240,6 +240,8 @@ function Object.Proto()
           end
           obj.__setters[prop](obj, prop, val)
         end
+      elseif sig == "" then
+        return obj
       else
         error(Errors.BAD_SIGNATURE)
       end
