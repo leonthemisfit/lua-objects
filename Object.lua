@@ -211,7 +211,7 @@ function Object.Proto()
       if obj.__inheritors[self.__name] then
         return true
       else
-        return false
+        return self:Is_Instance(obj)
       end
     end,
 
