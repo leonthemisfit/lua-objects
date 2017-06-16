@@ -5,7 +5,8 @@ local Errors = {
   KEY_VIOLATION = "Keys cannot be added to the onject with dot notation.",
   READONLY = "This property is readonly and cannot be assigned to.",
   BAD_SIGNATURE = "The method call did not match any known signature.",
-  SIGNATURE_EXISTS = "The signature supplied already exists in the object."
+  SIGNATURE_EXISTS = "The signature supplied already exists in the object.",
+  PARAM_ERROR = "Constructor parameter does not match an object property."
 }
 
 local Defaults = {
@@ -164,7 +165,8 @@ function Object.Proto()
       return getmetatable(self) == getmetatable(tbl)
     end,
 
-    New = function(self)
+    New = function (self, params)
+      params = params or {}
       local obj = {}
       obj.__variables = Util.deep_copy(self.__variables)
       obj.__getters = Util.deep_copy(self.__getters)
@@ -175,6 +177,14 @@ function Object.Proto()
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
+
+      for prop,val in pairs(params) do
+        if not self.__setters[prop] then
+          error(Errors.PARAM_ERROR)
+        end
+        obj.__setters[prop](obj, prop, val)
+      end
+
       return obj
     end
   }
@@ -184,8 +194,9 @@ function Object.Proto()
 end
 
 Object.Meta = {
-  __call = function (tbl)
-    return tbl:New()
+  __call = function (tbl, params)
+    params = params or {}
+    return tbl:New(params)
   end,
 
   __index = function(tbl, key)
