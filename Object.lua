@@ -6,7 +6,8 @@ local Errors = {
   READONLY = "This property is readonly and cannot be assigned to.",
   BAD_SIGNATURE = "The method call did not match any known signature.",
   SIGNATURE_EXISTS = "The signature supplied already exists in the object.",
-  PARAM_ERROR = "Constructor parameter does not match an object property."
+  PARAM_ERROR = "Constructor parameter does not match an object property.",
+  DUPLICATE_INHERITOR = "This object is already inherited."
 }
 
 local Defaults = {
@@ -71,6 +72,7 @@ function Object.Proto()
     __static = {},
     __overloads = {},
     __constructors = {},
+    __inheritors = {},
     __name = "",
 
     Validate_Index_Key = function (self, key)
@@ -170,8 +172,47 @@ function Object.Proto()
       end
     end,
 
+    Implements = function (self, obj)
+      if self.__inheritors[obj.__name] then
+        error(Errors.DUPLICATE_INHERITOR)
+      end
+
+      self.__inheritors[obj.__name] = true
+
+      for prop,tbl in pairs(obj.__inherited) do
+        for k,v in pairs(tbl) do
+          if prop == "__getters" then
+            self:Add_Getter(k, v)
+          elseif prop == "__setters" then
+            self:Add_Setter(k, v)
+          elseif prop == "__variables" then
+            self:Add_Variable(k, v)
+          elseif prop == "__methods" then
+            self:Add_Method(k, v)
+          elseif prop == "__static" then
+            self:Add_Static_Method(k, v)
+          elseif prop == "__overloads" then
+            for sig,func in ipairs(v.__sigs) do
+              self:Add_Overloaded_Method(k, Util.split(sig, "."), func)
+            end
+          elseif prop == "__inheritors" then
+            self.__inheritors[k] = true
+          end
+        end
+      end
+
+    end,
+
     Is_Instance = function (self, tbl)
       return getmetatable(self) == getmetatable(tbl)
+    end,
+
+    Is_Inherited = function (self, obj)
+      if obj.__inheritors[self.__name] then
+        return true
+      else
+        return false
+      end
     end,
 
     New = function (self, ...)
@@ -182,6 +223,7 @@ function Object.Proto()
       obj.__methods = Util.deep_copy(self.__methods)
       obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
       obj.__constructors = Util.deep_copy(self.__constructors)
+      obj.__inheritors = Util.deep_copy(self.__inheritors)
       obj.__static = self.__static
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
@@ -205,8 +247,12 @@ function Object.Proto()
       return obj
     end
   }
+
   proto.__indexed =
     {proto.__getters, proto.__methods, proto.__static, proto.__overloads}
+  proto.__inherited =
+    {proto.__getters, proto.__setters, proto.__variables, proto.__methods,
+     proto.__static, proto.__overloads}
   return proto
 end
 
