@@ -70,6 +70,7 @@ function Object.Proto()
     __methods = {},
     __static = {},
     __overloads = {},
+    __constructors = {},
     __name = "",
 
     Validate_Index_Key = function (self, key)
@@ -86,6 +87,14 @@ function Object.Proto()
           error(Errors.KEY_EXISTS)
         end
       end
+    end,
+
+    Add_Constructor = function (self, sig_table, func)
+      local sig = Util.signature_from_table(sig_table)
+      if self.__constructors[sig] then
+        error(Errors.SIGNATURE_EXISTS)
+      end
+      self.__constructors[sig] = func
     end,
 
     Add_Custom_Property = function (self, name, val, getter, setter)
@@ -165,24 +174,32 @@ function Object.Proto()
       return getmetatable(self) == getmetatable(tbl)
     end,
 
-    New = function (self, params)
-      params = params or {}
+    New = function (self, ...)
       local obj = {}
       obj.__variables = Util.deep_copy(self.__variables)
       obj.__getters = Util.deep_copy(self.__getters)
       obj.__setters = Util.deep_copy(self.__setters)
       obj.__methods = Util.deep_copy(self.__methods)
       obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
+      obj.__constructors = Util.deep_copy(self.__constructors)
       obj.__static = self.__static
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
 
-      for prop,val in pairs(params) do
-        if not self.__setters[prop] then
-          error(Errors.PARAM_ERROR)
+      local sig = Util.signature(...)
+      if obj.__constructors[sig] then
+        obj.__constructors[sig](obj, ...)
+      elseif sig == "table" then
+        local params = table.pack(...)
+        for prop,val in pairs(params[1]) do
+          if not obj.__setters[prop] then
+            error(Errors.PARAM_ERROR)
+          end
+          obj.__setters[prop](obj, prop, val)
         end
-        obj.__setters[prop](obj, prop, val)
+      else
+        error(Errors.BAD_SIGNATURE)
       end
 
       return obj
@@ -194,9 +211,8 @@ function Object.Proto()
 end
 
 Object.Meta = {
-  __call = function (tbl, params)
-    params = params or {}
-    return tbl:New(params)
+  __call = function (tbl, ...)
+    return tbl:New(...)
   end,
 
   __index = function(tbl, key)
