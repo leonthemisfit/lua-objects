@@ -3,6 +3,10 @@ local Util = require("Util")
 
 local Queue = Object("Queue")
 
+Queue:Add_Constructor({"string"}, function (self, str)
+  self.Test = str
+end)
+
 Queue:Add_Variable("queue", {})
 
 Queue:Add_Getter("Length", function (tbl)
