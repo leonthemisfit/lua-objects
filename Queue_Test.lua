@@ -1,5 +1,6 @@
 local Queue = require("Queue")
 local Util = require("Util")
+local Object = require("Object")
 
 local queue = Queue {
   Test = "hunter2"
@@ -32,3 +33,8 @@ assert(queue.Test == "hunter2", queue.Test)
 local queue2 = Queue("something clever")
 
 assert(queue2.Test == "something clever")
+
+local EventQueue = Object("EventQueue")
+EventQueue:Implements(Queue)
+
+local evt = EventQueue()
