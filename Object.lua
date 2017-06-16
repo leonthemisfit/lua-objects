@@ -5,7 +5,9 @@ local Errors = {
   KEY_VIOLATION = "Keys cannot be added to the onject with dot notation.",
   READONLY = "This property is readonly and cannot be assigned to.",
   BAD_SIGNATURE = "The method call did not match any known signature.",
-  SIGNATURE_EXISTS = "The signature supplied already exists in the object."
+  SIGNATURE_EXISTS = "The signature supplied already exists in the object.",
+  PARAM_ERROR = "Constructor parameter does not match an object property.",
+  DUPLICATE_INHERITOR = "This object is already inherited."
 }
 
 local Defaults = {
@@ -69,6 +71,8 @@ function Object.Proto()
     __methods = {},
     __static = {},
     __overloads = {},
+    __constructors = {},
+    __inheritors = {},
     __name = "",
 
     Validate_Index_Key = function (self, key)
@@ -85,6 +89,14 @@ function Object.Proto()
           error(Errors.KEY_EXISTS)
         end
       end
+    end,
+
+    Add_Constructor = function (self, sig_table, func)
+      local sig = Util.signature_from_table(sig_table)
+      if self.__constructors[sig] then
+        error(Errors.SIGNATURE_EXISTS)
+      end
+      self.__constructors[sig] = func
     end,
 
     Add_Custom_Property = function (self, name, val, getter, setter)
@@ -160,32 +172,95 @@ function Object.Proto()
       end
     end,
 
+    Implements = function (self, obj)
+      if self.__inheritors[obj.__name] then
+        error(Errors.DUPLICATE_INHERITOR)
+      end
+
+      self.__inheritors[obj.__name] = true
+
+      for i,tbl in ipairs(obj.__inherited) do
+        for k,v in pairs(tbl) do
+          if tbl == obj.__getters then
+            self:Add_Getter(k, v)
+          elseif tbl == obj.__setters then
+            self:Add_Setter(k, v)
+          elseif tbl == obj.__variables then
+            self:Add_Variable(k, v)
+          elseif tbl == obj.__methods then
+            self:Add_Method(k, v)
+          elseif tbl == obj.__static then
+            self:Add_Static_Method(k, v)
+          elseif tbl == obj.__overloads then
+            for sig,func in ipairs(v.__sigs) do
+              self:Add_Overloaded_Method(k, Util.split(sig, "."), func)
+            end
+          elseif tbl == obj.__inheritors then
+            self.__inheritors[k] = true
+          end
+        end
+      end
+
+    end,
+
     Is_Instance = function (self, tbl)
       return getmetatable(self) == getmetatable(tbl)
     end,
 
-    New = function(self)
+    Is_Inherited = function (self, obj)
+      if obj.__inheritors[self.__name] then
+        return true
+      else
+        return self:Is_Instance(obj)
+      end
+    end,
+
+    New = function (self, ...)
       local obj = {}
       obj.__variables = Util.deep_copy(self.__variables)
       obj.__getters = Util.deep_copy(self.__getters)
       obj.__setters = Util.deep_copy(self.__setters)
       obj.__methods = Util.deep_copy(self.__methods)
       obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
+      obj.__constructors = Util.deep_copy(self.__constructors)
+      obj.__inheritors = Util.deep_copy(self.__inheritors)
       obj.__static = self.__static
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
+
+      local sig = Util.signature(...)
+      if obj.__constructors[sig] then
+        obj.__constructors[sig](obj, ...)
+      elseif sig == "table" then
+        local params = table.pack(...)
+        for prop,val in pairs(params[1]) do
+          if not obj.__setters[prop] then
+            error(Errors.PARAM_ERROR)
+          end
+          obj.__setters[prop](obj, prop, val)
+        end
+      elseif sig == "" then
+        return obj
+      else
+        error(Errors.BAD_SIGNATURE)
+      end
+
       return obj
     end
   }
+
   proto.__indexed =
     {proto.__getters, proto.__methods, proto.__static, proto.__overloads}
+  proto.__inherited =
+    {proto.__getters, proto.__setters, proto.__variables, proto.__methods,
+     proto.__static, proto.__overloads}
   return proto
 end
 
 Object.Meta = {
-  __call = function (tbl)
-    return tbl:New()
+  __call = function (tbl, ...)
+    return tbl:New(...)
   end,
 
   __index = function(tbl, key)

@@ -3,11 +3,17 @@ local Util = require("Util")
 
 local Queue = Object("Queue")
 
+Queue:Add_Constructor({"string"}, function (self, str)
+  self.Test = str
+end)
+
 Queue:Add_Variable("queue", {})
 
 Queue:Add_Getter("Length", function (tbl)
   return #tbl.__variables.queue
 end)
+
+Queue:Add_Property("Test", 2)
 
 Queue:Add_Method("Push", function (self, obj)
   self.__variables.queue[self.Length+1] = obj

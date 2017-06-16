@@ -1,5 +1,17 @@
 local Util = {}
 
+function Util.split(str, sep)
+  local parts = {}
+  local patt = "([^" .. sep .. "]+)"
+  for match in str:gmatch(patt) do
+    parts[#parts+1] = match
+  end
+  if #parts == 0 then
+    parts[1] = str
+  end
+  return parts
+end
+
 function Util.slice(tbl, x, y)
   local ntbl = {}
   for i = x, y or #tbl do
