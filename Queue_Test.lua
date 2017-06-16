@@ -37,4 +37,17 @@ assert(queue2.Test == "something clever")
 local EventQueue = Object("EventQueue")
 EventQueue:Implements(Queue)
 
+EventQueue:Add_Method("Register", function (self, event, func)
+
+end)
+
 local evt = EventQueue()
+
+assert(evt.Length == 0)
+assert(evt.Register ~= nil)
+assert(queue.Register == nil)
+evt:Push("test")
+assert(evt.Length == 1)
+assert(queue.Length == 0)
+assert(evt:Pop() == "test")
+assert(evt.Length == 0)
