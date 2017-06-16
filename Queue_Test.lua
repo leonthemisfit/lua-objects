@@ -28,3 +28,7 @@ assert(Queue:Is_Instance(queue))
 assert(queue:overloaded("test") == "test")
 assert(queue:overloaded("test", 2) == "test test")
 assert(queue.Test == "hunter2", queue.Test)
+
+local queue2 = Queue("something clever")
+
+assert(queue2.Test == "something clever")
