@@ -1,9 +1,9 @@
 local Queue = require("Queue")
 local Util = require("Util")
 
-local queue = Queue({
+local queue = Queue {
   Test = "hunter2"
-})
+}
 
 assert(queue.Length == 0)
 queue:Push("A")
