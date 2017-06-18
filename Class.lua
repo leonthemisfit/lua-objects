@@ -74,7 +74,22 @@ function Class.Proto()
     __overloads = {},
     __constructors = {},
     __inheritors = {},
+    __privates = {},
+    __locks = {},
     __name = "",
+
+    __caller = function (self, ...)
+      self.__locks[#self.__locks+1] = true
+      local func = rawget(self, "__callfunc")
+      self.__privates = self.__variables
+      local res = func(self, ...)
+      rawset(self, "__callfunc", nil)
+      self.__locks = Util.rest(self.__locks)
+      if #self.__locks == 0 then
+        self.__privates = {}
+      end
+      return res
+    end,
 
     Validate_Index_Key = function (self, key)
       for _,tbl in ipairs(self.__indexed) do
@@ -226,6 +241,9 @@ function Class.Proto()
       obj.__constructors = Util.deep_copy(self.__constructors)
       obj.__inheritors = Util.deep_copy(self.__inheritors)
       obj.__static = self.__static
+      obj.__privates = {}
+      obj.__locks = {}
+      obj.__caller = self.__caller
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
@@ -266,11 +284,19 @@ Class.Meta = {
 
   __index = function(tbl, key)
     if tbl.__getters[key] then
-      return tbl.__getters[key](tbl, key)
+      rawset(tbl, "__callfunc", tbl.__getters[key])
+      return tbl.__caller(tbl, key)
+    elseif tbl.__privates[key] then
+      return tbl.__privates[key]
     else
       for _, itbl in ipairs(tbl.__indexed) do
         if itbl[key] then
-          return itbl[key]
+          if itbl ~= tbl.__static then
+            rawset(tbl, "__callfunc", itbl[key])
+            return tbl.__caller
+          else
+            return itbl[key]
+          end
         end
       end
     end
@@ -279,6 +305,8 @@ Class.Meta = {
   __newindex = function (tbl, key, val)
     if tbl.__setters[key] then
       tbl.__setters[key](tbl, key, val)
+    elseif tbl.__privates[key] then
+      tbl.__variables[key] = val
     else
       error(Errors.KEY_VIOLATION)
     end
