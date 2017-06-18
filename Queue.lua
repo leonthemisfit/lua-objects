@@ -10,22 +10,22 @@ end)
 Queue:Add_Variable("queue", {})
 
 Queue:Add_Getter("Length", function (tbl)
-  return #tbl.__variables.queue
+  return #tbl.queue
 end)
 
 Queue:Add_Property("Test", 2)
 
 Queue:Add_Method("Push", function (self, obj)
-  self.__variables.queue[self.Length+1] = obj
+  self.queue[self.Length+1] = obj
 end)
 
 Queue:Add_Method("Pop", function (self)
   if self.Length == 0 then
     return nil
   else
-    local val = self.__variables.queue[1]
-    local tbl = Util.rest(self.__variables.queue)
-    self.__variables.queue = tbl
+    local val = self.queue[1]
+    local tbl = Util.rest(self.queue)
+    self.queue = tbl
     return val
   end
 end)
