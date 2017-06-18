@@ -7,7 +7,8 @@ local Errors = {
   BAD_SIGNATURE = "The method call did not match any known signature.",
   SIGNATURE_EXISTS = "The signature supplied already exists in the object.",
   PARAM_ERROR = "Constructor parameter does not match an object property.",
-  DUPLICATE_INHERITOR = "This object is already inherited."
+  DUPLICATE_INHERITOR = "This object is already inherited.",
+  INVALID_META = "The metafunction name provided is not valid."
 }
 
 local Defaults = {
@@ -166,9 +167,8 @@ function Class.Proto()
       if raw_name then
         local meta = getmetatable(self)
         meta[raw_name] = val
-        return true
       else
-        return false
+        error(Errors.INVALID_META)
       end
     end,
 
