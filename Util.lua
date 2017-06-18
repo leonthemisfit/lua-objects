@@ -58,8 +58,9 @@ function Util.list(tbl)
   end
 end
 
+Util.sig_separator = "."
 function Util.signature_from_table(tbl)
-  return table.concat(tbl, ".")
+  return table.concat(tbl, Util.sig_separator)
 end
 
 function Util.signature(...)

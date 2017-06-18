@@ -193,7 +193,8 @@ function Class.Proto()
             self:Add_Static_Method(k, v)
           elseif tbl == obj.__overloads then
             for sig,func in ipairs(v.__sigs) do
-              self:Add_Overloaded_Method(k, Util.split(sig, "."), func)
+              self:Add_Overloaded_Method(k,
+               Util.split(sig, Util.sig_separator), func)
             end
           elseif tbl == obj.__inheritors then
             self.__inheritors[k] = true
