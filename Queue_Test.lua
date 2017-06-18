@@ -55,3 +55,7 @@ assert(EventQueue:Is_Inherited(evt))
 assert(Queue:Is_Inherited(evt))
 assert(Queue:Is_Inherited(EventQueue))
 assert(queue.queue == nil)
+assert(queue.private == nil)
+assert(queue.Private == 0)
+queue.Private = ""
+assert(queue.Private == "")
