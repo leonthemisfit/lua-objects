@@ -125,7 +125,7 @@ function Class.Proto()
 
     Add_Variable = function (self, name, val)
       if self.__variables[name] then
-        error(Erros.KEY_EXISTS)
+        error(Errors.KEY_EXISTS)
       end
       self.__variables[name] = val
     end,
