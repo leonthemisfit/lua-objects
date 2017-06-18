@@ -1,7 +1,7 @@
-local Object = require("Object")
+local Class = require("Class")
 local Util = require("Util")
 
-local Queue = Object("Queue")
+local Queue = Class("Queue")
 
 Queue:Add_Constructor({"string"}, function (self, str)
   self.Test = str

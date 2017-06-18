@@ -1,6 +1,6 @@
 local Queue = require("Queue")
 local Util = require("Util")
-local Object = require("Object")
+local Class = require("Class")
 
 local queue = Queue {
   Test = "hunter2"
@@ -34,7 +34,7 @@ local queue2 = Queue("something clever")
 
 assert(queue2.Test == "something clever")
 
-local EventQueue = Object("EventQueue")
+local EventQueue = Class("EventQueue")
 EventQueue:Implements(Queue)
 
 EventQueue:Add_Method("Register", function (self, event, func)
