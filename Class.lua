@@ -285,12 +285,16 @@ Class.Meta = {
   end
 }
 
+function Class.New(name)
+  local obj = Class.Proto()
+  obj.__name = name
+  setmetatable(obj, Util.deep_copy(Class.Meta))
+  return obj
+end
+
 local meta = {
   __call = function (tbl, name)
-    local obj = Class.Proto()
-    obj.__name = name
-    setmetatable(obj, Util.deep_copy(Class.Meta))
-    return obj
+    return Class.New(name)
   end,
 
   __newindex = function (tbl, key, val)
