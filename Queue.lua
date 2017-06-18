@@ -8,9 +8,18 @@ Queue:Add_Constructor({"string"}, function (self, str)
 end)
 
 Queue:Add_Variable("queue", {})
+Queue:Add_Variable("private", 0)
 
 Queue:Add_Getter("Length", function (tbl)
   return #tbl.queue
+end)
+
+Queue:Add_Setter("Private", function (self, key, val)
+  self.private = val
+end)
+
+Queue:Add_Getter("Private", function (self, key)
+  return self.private
 end)
 
 Queue:Add_Property("Test", 2)
