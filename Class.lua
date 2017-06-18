@@ -257,7 +257,8 @@ function Class.Proto()
           if not obj.__setters[prop] then
             error(Errors.PARAM_ERROR)
           end
-          obj.__setters[prop](obj, prop, val)
+          rawset(obj, "__callfunc", obj.__setters[prop])
+          obj.__caller(obj, prop, val)
         end
       elseif sig == "" then
         return obj
@@ -304,7 +305,8 @@ Class.Meta = {
 
   __newindex = function (tbl, key, val)
     if tbl.__setters[key] then
-      tbl.__setters[key](tbl, key, val)
+      rawset(tbl, "__callfunc", tbl.__setters[key])
+      tbl.__caller(tbl, key, val)
     elseif tbl.__privates[key] then
       tbl.__variables[key] = val
     else
