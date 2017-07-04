@@ -251,7 +251,8 @@ function Class.Proto()
 
       local sig = Util.signature(...)
       if obj.__constructors[sig] then
-        obj.__constructors[sig](obj, ...)
+        rawset(obj, "__callfunc", obj.__constructors[sig])
+        obj.__caller(obj, ...)
       elseif sig == "table" then
         local params = table.pack(...)
         for prop,val in pairs(params[1]) do
