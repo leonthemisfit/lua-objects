@@ -139,6 +139,7 @@ function Class.Proto()
     end,
 
     Add_Variable = function (self, name, val)
+      name = "P_" .. name
       if self.__variables[name] then
         error(Errors.KEY_EXISTS)
       end
@@ -201,7 +202,7 @@ function Class.Proto()
           elseif tbl == obj.__setters then
             self:Add_Setter(k, v)
           elseif tbl == obj.__variables then
-            self:Add_Variable(k, v)
+            self:Add_Variable(k:sub(3), v)
           elseif tbl == obj.__methods then
             self:Add_Method(k, v)
           elseif tbl == obj.__static then
