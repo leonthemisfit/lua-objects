@@ -64,6 +64,14 @@ end
 
 local Class = {}
 
+function Class.Type(obj)
+  if type(obj) == "table" and obj.__name then
+    return obj.__name
+  else
+    return type(obj)
+  end
+end
+
 function Class.Proto()
   local proto = {
     __getters = {},
@@ -234,6 +242,7 @@ function Class.Proto()
 
     New = function (self, ...)
       local obj = {}
+      obj.__name = self.__name
       obj.__variables = Util.deep_copy(self.__variables)
       obj.__getters = Util.deep_copy(self.__getters)
       obj.__setters = Util.deep_copy(self.__setters)
