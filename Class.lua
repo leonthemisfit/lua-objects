@@ -2,13 +2,15 @@ local Util = require("Util")
 
 local Errors = {
   KEY_EXISTS = "The key you are attempting to add already exists in object.",
-  KEY_VIOLATION = "Keys cannot be added to the onject with dot notation.",
+  KEY_VIOLATION = "Keys cannot be added to the object with dot notation.",
   READONLY = "This property is readonly and cannot be assigned to.",
   BAD_SIGNATURE = "The method call did not match any known signature.",
   SIGNATURE_EXISTS = "The signature supplied already exists in the object.",
   PARAM_ERROR = "Constructor parameter does not match an object property.",
   DUPLICATE_INHERITOR = "This object is already inherited.",
-  INVALID_META = "The metafunction name provided is not valid."
+  INVALID_META = "The metafunction name provided is not valid.",
+  DUPLICATE_CAST = "A cast to the specified type has already been adedded.",
+  INVALID_CAST = "Attempt to cast to a type without a cast function specified."
 }
 
 local Defaults = {
@@ -84,6 +86,7 @@ function Class.Proto()
     __inheritors = {},
     __privates = {},
     __locks = {},
+    __casts = {},
     __name = "",
 
     __caller = function (self, ...)
@@ -240,6 +243,23 @@ function Class.Proto()
       end
     end,
 
+    Add_Cast = function (self, type_string, func)
+      if self.__casts[type_string] then
+        error(Errors.DUPLICATE_CAST)
+      else
+        self.__casts[type_string] = func
+      end
+    end,
+
+    Cast = function (self, type_string)
+      if self.__casts[type_string] then
+        rawset(self, "__callfunc", self.__casts[type_string])
+        return self.__caller(self, type_string)
+      else
+        error(Errors.INVALID_CAST)
+      end
+    end,
+
     New = function (self, ...)
       local obj = {}
       obj.__name = self.__name
@@ -250,10 +270,12 @@ function Class.Proto()
       obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
       obj.__constructors = Util.deep_copy(self.__constructors)
       obj.__inheritors = Util.deep_copy(self.__inheritors)
+      obj.__casts = Util.deep_copy(self.__casts)
       obj.__static = self.__static
       obj.__privates = {}
       obj.__locks = {}
       obj.__caller = self.__caller
+      obj.Cast = self.Cast
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
