@@ -67,4 +67,8 @@ Queue:Add_Overloaded_Method("overloaded", {"table", "string", "number"}, functio
   return table.concat(t, " ")
 end)
 
+Queue:Add_Cast("string", function (self)
+  return "Hello, world!"
+end)
+
 return Queue
