@@ -67,3 +67,7 @@ assert(Class.Type(nil) == "nil")
 assert(Class.Type(function () end) == "function")
 assert(Class.Type(queue) == "Queue")
 assert(Class.Type(evt) == "EventQueue")
+
+local cast = queue:Cast("string")
+assert(Class.Type(cast) == "string")
+assert(cast == "Hello, world!")
