@@ -59,3 +59,11 @@ assert(queue.private == nil)
 assert(queue.Private == 0)
 queue.Private = ""
 assert(queue.Private == "")
+
+assert(Class.Type("Hello world") == "string")
+assert(Class.Type(2) == "number")
+assert(Class.Type({1, 2, 3}) == "table")
+assert(Class.Type(nil) == "nil")
+assert(Class.Type(function () end) == "function")
+assert(Class.Type(queue) == "Queue")
+assert(Class.Type(evt) == "EventQueue")
