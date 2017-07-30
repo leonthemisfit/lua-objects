@@ -1,5 +1,5 @@
 local Class = require("Class")
-local Util = require("Util")
+local ClassUtil = require("ClassUtil")
 
 local Queue = Class("Queue")
 
@@ -33,7 +33,7 @@ Queue:Add_Method("Pop", function (self)
     return nil
   else
     local val = self.P_queue[1]
-    local tbl = Util.rest(self.P_queue)
+    local tbl = ClassUtil.rest(self.P_queue)
     self.P_queue = tbl
     return val
   end

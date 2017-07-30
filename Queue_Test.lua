@@ -1,5 +1,5 @@
 local Queue = require("Queue")
-local Util = require("Util")
+local ClassUtil = require("ClassUtil")
 local Class = require("Class")
 
 local queue = Queue {

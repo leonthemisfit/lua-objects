@@ -1,4 +1,4 @@
-local Util = require("Util")
+local ClassUtil = require("ClassUtil")
 
 local Errors = {
   KEY_EXISTS = "The key you are attempting to add already exists in object.",
@@ -48,7 +48,7 @@ local Signature = {}
 
 local Sig_Meta = {
   __call = function (tbl, ...)
-    local sig = Util.signature(...)
+    local sig = ClassUtil.signature(...)
     if tbl.__sigs and tbl.__sigs[sig] then
       return tbl.__sigs[sig](...)
     else
@@ -95,7 +95,7 @@ function Class.Proto()
       self.__privates = self.__variables
       local res = func(self, ...)
       rawset(self, "__callfunc", nil)
-      self.__locks = Util.rest(self.__locks)
+      self.__locks = ClassUtil.rest(self.__locks)
       if #self.__locks == 0 then
         self.__privates = {}
       end
@@ -119,7 +119,7 @@ function Class.Proto()
     end,
 
     Add_Constructor = function (self, sig_table, func)
-      local sig = Util.signature_from_table(sig_table)
+      local sig = ClassUtil.signature_from_table(sig_table)
       if self.__constructors[sig] then
         error(Errors.SIGNATURE_EXISTS)
       end
@@ -181,7 +181,7 @@ function Class.Proto()
         self.__overloads[name] = Signature.Proto()
       end
 
-      local sig = Util.signature_from_table(sig_table)
+      local sig = ClassUtil.signature_from_table(sig_table)
       if self.__overloads[name].__sigs[sig] then
         error(Errors.SIGNATURE_EXISTS)
       end
@@ -221,7 +221,7 @@ function Class.Proto()
           elseif tbl == obj.__overloads then
             for sig,func in ipairs(v.__sigs) do
               self:Add_Overloaded_Method(k,
-               Util.split(sig, Util.sig_separator), func)
+               ClassUtil.split(sig, ClassUtil.sig_separator), func)
             end
           elseif tbl == obj.__inheritors then
             self.__inheritors[k] = true
@@ -263,14 +263,14 @@ function Class.Proto()
     New = function (self, ...)
       local obj = {}
       obj.__name = self.__name
-      obj.__variables = Util.deep_copy(self.__variables)
-      obj.__getters = Util.deep_copy(self.__getters)
-      obj.__setters = Util.deep_copy(self.__setters)
-      obj.__methods = Util.deep_copy(self.__methods)
-      obj.__overloads = Util.deep_copy_meta(self.__overloads, Sig_Meta)
-      obj.__constructors = Util.deep_copy(self.__constructors)
-      obj.__inheritors = Util.deep_copy(self.__inheritors)
-      obj.__casts = Util.deep_copy(self.__casts)
+      obj.__variables = ClassUtil.deep_copy(self.__variables)
+      obj.__getters = ClassUtil.deep_copy(self.__getters)
+      obj.__setters = ClassUtil.deep_copy(self.__setters)
+      obj.__methods = ClassUtil.deep_copy(self.__methods)
+      obj.__overloads = ClassUtil.deep_copy_meta(self.__overloads, Sig_Meta)
+      obj.__constructors = ClassUtil.deep_copy(self.__constructors)
+      obj.__inheritors = ClassUtil.deep_copy(self.__inheritors)
+      obj.__casts = ClassUtil.deep_copy(self.__casts)
       obj.__static = self.__static
       obj.__privates = {}
       obj.__locks = {}
@@ -280,7 +280,7 @@ function Class.Proto()
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
       setmetatable(obj, getmetatable(self))
 
-      local sig = Util.signature(...)
+      local sig = ClassUtil.signature(...)
       if obj.__constructors[sig] then
         rawset(obj, "__callfunc", obj.__constructors[sig])
         obj.__caller(obj, ...)
@@ -351,7 +351,7 @@ Class.Meta = {
 function Class.New(name)
   local obj = Class.Proto()
   obj.__name = name
-  setmetatable(obj, Util.deep_copy(Class.Meta))
+  setmetatable(obj, ClassUtil.deep_copy(Class.Meta))
   return obj
 end
 
