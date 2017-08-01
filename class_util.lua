@@ -1,6 +1,6 @@
-local Util = {}
+local class_util = {}
 
-function Util.split(str, sep)
+function class_util.split(str, sep)
   local parts = {}
   local patt = "([^" .. sep .. "]+)"
   for match in str:gmatch(patt) do
@@ -12,7 +12,7 @@ function Util.split(str, sep)
   return parts
 end
 
-function Util.slice(tbl, x, y)
+function class_util.slice(tbl, x, y)
   local ntbl = {}
   for i = x, y or #tbl do
     ntbl[#ntbl+1] = tbl[i]
@@ -20,19 +20,19 @@ function Util.slice(tbl, x, y)
   return ntbl
 end
 
-function Util.rest(tbl)
+function class_util.rest(tbl)
   if #tbl < 2 then
     return {}
   else
-    return Util.slice(tbl, 2)
+    return class_util.slice(tbl, 2)
   end
 end
 
-function Util.deep_copy(old_table, new_table)
+function class_util.deep_copy(old_table, new_table)
   new_table = new_table or {}
   for k,v in pairs(old_table) do
     if type(v) == "table" then
-      new_table[k] = Util.deep_copy(v)
+      new_table[k] = class_util.deep_copy(v)
     else
       new_table[k] = v
     end
@@ -40,11 +40,11 @@ function Util.deep_copy(old_table, new_table)
   return new_table
 end
 
-function Util.deep_copy_meta(old_table, meta_table, new_table)
+function class_util.deep_copy_meta(old_table, meta_table, new_table)
   new_table = new_table or {}
   for k,v in pairs(old_table) do
     if type(v) == "table" then
-      new_table[k] = setmetatable(Util.deep_copy(v), Util.deep_copy(meta_table))
+      new_table[k] = setmetatable(class_util.deep_copy(v), class_util.deep_copy(meta_table))
     else
       new_table[k] = v
     end
@@ -52,23 +52,23 @@ function Util.deep_copy_meta(old_table, meta_table, new_table)
   return new_table
 end
 
-function Util.list(tbl)
+function class_util.list(tbl)
   for k,v in pairs(tbl) do
     print(tostring(k) .. ": " .. tostring(v))
   end
 end
 
-Util.sig_separator = "."
-function Util.signature_from_table(tbl)
-  return table.concat(tbl, Util.sig_separator)
+class_util.sig_separator = "."
+function class_util.signature_from_table(tbl)
+  return table.concat(tbl, class_util.sig_separator)
 end
 
-function Util.signature(...)
+function class_util.signature(...)
   local tbl = {}
   for i,v in ipairs(table.pack(...)) do
     tbl[i] = type(v)
   end
-  return Util.signature_from_table(tbl)
+  return class_util.signature_from_table(tbl)
 end
 
-return Util
+return class_util
