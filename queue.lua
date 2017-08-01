@@ -11,30 +11,30 @@ queue:add_variable("queue", {})
 queue:add_variable("private", 0)
 
 queue:add_getter("length", function (tbl)
-  return #tbl.P_queue
+  return #tbl.privates.queue
 end)
 
 queue:add_setter("private", function (self, key, val)
-  self.P_private = val
+  self.privates.private = val
 end)
 
 queue:add_getter("private", function (self, key)
-  return self.P_private
+  return self.privates.private
 end)
 
 queue:add_property("test", 2)
 
 queue:add_method("push", function (self, obj)
-  self.P_queue[self.length+1] = obj
+  self.privates.queue[self.length+1] = obj
 end)
 
 queue:add_method("pop", function (self)
   if self.length == 0 then
     return nil
   else
-    local val = self.P_queue[1]
-    local tbl = class_util.rest(self.P_queue)
-    self.P_queue = tbl
+    local val = self.privates.queue[1]
+    local tbl = class_util.rest(self.privates.queue)
+    self.privates.queue = tbl
     return val
   end
 end)

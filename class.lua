@@ -84,20 +84,20 @@ function class.proto()
     __overloads = {},
     __constructors = {},
     __inheritors = {},
-    __privates = {},
     __locks = {},
     __casts = {},
     __name = "",
+    privates = nil,
 
     __caller = function (self, ...)
       self.__locks[#self.__locks+1] = true
       local func = rawget(self, "__callfunc")
-      self.__privates = self.__variables
+      rawset(self, "privates", self.__variables)
       local res = func(self, ...)
       rawset(self, "__callfunc", nil)
       self.__locks = class_util.rest(self.__locks)
       if #self.__locks == 0 then
-        self.__privates = {}
+        rawset(self, "privates", nil)
       end
       return res
     end,
@@ -150,7 +150,6 @@ function class.proto()
     end,
 
     add_variable = function (self, name, val)
-      name = "P_" .. name
       if self.__variables[name] then
         error(errors.KEY_EXISTS)
       end
@@ -213,7 +212,7 @@ function class.proto()
           elseif tbl == obj.__setters then
             self:add_setter(k, v)
           elseif tbl == obj.__variables then
-            self:add_variable(k:sub(3), v)
+            self:add_variable(k, v)
           elseif tbl == obj.__methods then
             self:add_method(k, v)
           elseif tbl == obj.__static then
@@ -272,7 +271,7 @@ function class.proto()
       obj.__inheritors = class_util.deep_copy(self.__inheritors)
       obj.__casts = class_util.deep_copy(self.__casts)
       obj.__static = self.__static
-      obj.__privates = {}
+      obj.privates = nil
       obj.__locks = {}
       obj.__caller = self.__caller
       obj.cast = self.cast
@@ -320,8 +319,6 @@ class.meta = {
     if tbl.__getters[key] then
       rawset(tbl, "__callfunc", tbl.__getters[key])
       return tbl.__caller(tbl, key)
-    elseif tbl.__privates[key] then
-      return tbl.__privates[key]
     else
       for _, itbl in ipairs(tbl.__indexed) do
         if itbl[key] then
@@ -340,8 +337,6 @@ class.meta = {
     if tbl.__setters[key] then
       rawset(tbl, "__callfunc", tbl.__setters[key])
       tbl.__caller(tbl, key, val)
-    elseif tbl.__privates[key] then
-      tbl.__variables[key] = val
     else
       error(errors.KEY_VIOLATION)
     end

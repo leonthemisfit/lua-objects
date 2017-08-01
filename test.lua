@@ -71,3 +71,5 @@ assert(class.type(evt) == "event_queue")
 local casted = test_queue:cast("string")
 assert(class.type(casted) == "string")
 assert(casted == "Hello, world!")
+
+assert(test_queue.privates == nil)
