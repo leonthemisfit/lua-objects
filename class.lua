@@ -89,17 +89,17 @@ function class.proto()
     __name = "",
     privates = nil,
 
-    __caller = function (self, ...)
+    __get_caller = function (self, func)
       self.__locks[#self.__locks+1] = true
-      local func = rawget(self, "__callfunc")
       rawset(self, "privates", self.__variables)
-      local res = func(self, ...)
-      rawset(self, "__callfunc", nil)
-      self.__locks = class_util.rest(self.__locks)
-      if #self.__locks == 0 then
-        rawset(self, "privates", nil)
+      return function (self, ...)
+        local res = func(self, ...)
+        self.__locks = class_util.rest(self.__locks)
+        if #self.__locks == 0 then
+          rawset(self, "privates", nil)
+        end
+        return res
       end
-      return res
     end,
 
     validate_index_key = function (self, key)
@@ -252,8 +252,9 @@ function class.proto()
 
     cast = function (self, type_string)
       if self.__casts[type_string] then
-        rawset(self, "__callfunc", self.__casts[type_string])
-        return self.__caller(self, type_string)
+        local func = self.__casts[type_string]
+        local caller = self.__get_caller(self, func)
+        return caller(self, type_string)
       else
         error(errors.INVALID_CAST)
       end
@@ -273,7 +274,7 @@ function class.proto()
       obj.__static = self.__static
       obj.privates = nil
       obj.__locks = {}
-      obj.__caller = self.__caller
+      obj.__get_caller = self.__get_caller
       obj.cast = self.cast
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
@@ -281,16 +282,18 @@ function class.proto()
 
       local sig = class_util.signature(...)
       if obj.__constructors[sig] then
-        rawset(obj, "__callfunc", obj.__constructors[sig])
-        obj.__caller(obj, ...)
+        local func = obj.__constructors[sig]
+        local caller = obj.__get_caller(obj, func)
+        caller(obj, ...)
       elseif sig == "table" then
         local params = table.pack(...)
         for prop,val in pairs(params[1]) do
           if not obj.__setters[prop] then
             error(errors.PARAM_ERROR)
           end
-          rawset(obj, "__callfunc", obj.__setters[prop])
-          obj.__caller(obj, prop, val)
+          local func = obj.__setters[prop]
+          local caller = obj.__get_caller(obj, func)
+          caller(obj, prop, val)
         end
       elseif sig == "" then
         return obj
@@ -317,14 +320,14 @@ class.meta = {
 
   __index = function(tbl, key)
     if tbl.__getters[key] then
-      rawset(tbl, "__callfunc", tbl.__getters[key])
-      return tbl.__caller(tbl, key)
+      local func = tbl.__getters[key]
+      local caller = tbl.__get_caller(tbl, func)
+      return caller(tbl, key)
     else
       for _, itbl in ipairs(tbl.__indexed) do
         if itbl[key] then
           if itbl ~= tbl.__static then
-            rawset(tbl, "__callfunc", itbl[key])
-            return tbl.__caller
+            return tbl.__get_caller(tbl, itbl[key])
           else
             return itbl[key]
           end
@@ -335,8 +338,9 @@ class.meta = {
 
   __newindex = function (tbl, key, val)
     if tbl.__setters[key] then
-      rawset(tbl, "__callfunc", tbl.__setters[key])
-      tbl.__caller(tbl, key, val)
+      local func = tbl.__setters[key]
+      local caller = tbl.__get_caller(tbl, func)
+      caller(tbl, key, val)
     else
       error(errors.KEY_VIOLATION)
     end
