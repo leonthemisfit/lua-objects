@@ -71,7 +71,6 @@ function class_util.signature_from_table(tbl)
   return table.concat(tbl, class_util.sig_separator)
 end
 
-
 function class_util.signature(...)
   local tbl = {}
   for i,v in ipairs(table.pack(...)) do
