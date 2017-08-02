@@ -9,6 +9,7 @@ local errors = {
   PARAM_ERROR = "Constructor parameter does not match an object property.",
   DUPLICATE_INHERITOR = "This object is already inherited.",
   INVALID_META = "The metafunction name provided is not valid.",
+  META_NOT_FUNCTION = "Only functions may be set for meta values.",
   DUPLICATE_CAST = "A cast to the specified type has already been adedded.",
   INVALID_CAST = "Attempt to cast to a type without a cast function specified."
 }
@@ -90,9 +91,9 @@ function class.proto()
     privates = nil,
 
     __get_caller = function (self, func)
-      self.__locks[#self.__locks+1] = true
-      rawset(self, "privates", self.__variables)
       return function (self, ...)
+        self.__locks[#self.__locks+1] = true
+        rawset(self, "privates", self.__variables)
         local res = func(self, ...)
         self.__locks = class_util.rest(self.__locks)
         if #self.__locks == 0 then
@@ -191,8 +192,12 @@ function class.proto()
     set_meta = function (self, name, val)
       local raw_name = meta_setters[name]
       if raw_name then
-        local meta = getmetatable(self)
-        meta[raw_name] = val
+        if type(val) == "function" then
+          local meta = getmetatable(self)
+          meta[raw_name] = self:__get_caller(val)
+        else
+          error(errors.META_NOT_FUNCTION)
+        end
       else
         error(errors.INVALID_META)
       end

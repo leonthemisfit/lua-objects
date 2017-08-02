@@ -44,7 +44,7 @@ queue:add_static_method("hello", function ()
 end)
 
 queue:set_meta("tostring", function (self)
-  return "Hello, world!"
+  return self.privates.test
 end)
 
 queue:set_meta("add", function (self, object)
