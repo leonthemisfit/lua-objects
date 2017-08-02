@@ -14,12 +14,12 @@ local errors = {
 }
 
 local defaults = {
-  GETTER = function (tbl, key)
-    return tbl.__variables[key]
+  GETTER = function (self, key)
+    return self.__variables[key]
   end,
 
-  SETTER = function (tbl, key, val)
-    tbl.__variables[key] = val
+  SETTER = function (self, key, val)
+    self.__variables[key] = val
   end,
 
   READONLY = function (...)
@@ -47,10 +47,10 @@ local meta_setters = {
 local signature = {}
 
 local sig_meta = {
-  __call = function (tbl, ...)
+  __call = function (self, ...)
     local sig = class_util.signature(...)
-    if tbl.__sigs and tbl.__sigs[sig] then
-      return tbl.__sigs[sig](...)
+    if self.__sigs and self.__sigs[sig] then
+      return self.__sigs[sig](...)
     else
       error(errors.BAD_SIGNATURE)
     end
@@ -253,7 +253,7 @@ function class.proto()
     cast = function (self, type_string)
       if self.__casts[type_string] then
         local func = self.__casts[type_string]
-        local caller = self.__get_caller(self, func)
+        local caller = self:__get_caller(func)
         return caller(self, type_string)
       else
         error(errors.INVALID_CAST)
@@ -314,33 +314,33 @@ function class.proto()
 end
 
 class.meta = {
-  __call = function (tbl, ...)
-    return tbl:new(...)
+  __call = function (self, ...)
+    return self:new(...)
   end,
 
-  __index = function(tbl, key)
-    if tbl.__getters[key] then
-      local func = tbl.__getters[key]
-      local caller = tbl.__get_caller(tbl, func)
-      return caller(tbl, key)
+  __index = function(self, key)
+    if self.__getters[key] then
+      local func = self.__getters[key]
+      local caller = self:__get_caller(func)
+      return caller(self, key)
     else
-      for _, itbl in ipairs(tbl.__indexed) do
-        if itbl[key] then
-          if itbl ~= tbl.__static then
-            return tbl.__get_caller(tbl, itbl[key])
+      for _, tbl in ipairs(self.__indexed) do
+        if tbl[key] then
+          if tbl ~= self.__static then
+            return self:__get_caller(tbl[key])
           else
-            return itbl[key]
+            return tbl[key]
           end
         end
       end
     end
   end,
 
-  __newindex = function (tbl, key, val)
-    if tbl.__setters[key] then
-      local func = tbl.__setters[key]
-      local caller = tbl.__get_caller(tbl, func)
-      caller(tbl, key, val)
+  __newindex = function (self, key, val)
+    if self.__setters[key] then
+      local func = self.__setters[key]
+      local caller = self:__get_caller(func)
+      caller(self, key, val)
     else
       error(errors.KEY_VIOLATION)
     end
@@ -355,11 +355,11 @@ function class.new(name)
 end
 
 local meta = {
-  __call = function (tbl, name)
+  __call = function (self, name)
     return class.new(name)
   end,
 
-  __newindex = function (tbl, key, val)
+  __newindex = function (self, key, val)
     error(errors.KEY_VIOLATION)
   end
 }
