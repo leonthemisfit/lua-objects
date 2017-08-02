@@ -75,7 +75,7 @@ end
 function class_util.signature(...)
   local tbl = {}
   for i,v in ipairs(table.pack(...)) do
-    tbl[i] = type(v)
+    tbl[i] = class_util.type(v)
   end
   return class_util.signature_from_table(tbl)
 end
