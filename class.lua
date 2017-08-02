@@ -42,7 +42,9 @@ local meta_setters = {
   concat = "__concat",
   eq = "__eq",
   lt = "__lt",
-  le = "__le"
+  le = "__le",
+  ipairs = "__ipairs",
+  pairs = "__pairs"
 }
 
 local signature = {}

@@ -71,4 +71,14 @@ queue:add_cast("string", function (self)
   return "Hello, world!"
 end)
 
+queue:set_meta("ipairs", function (self)
+  local i, n = 0, #self.privates.queue
+  return function ()
+    i = i + 1
+    if i < n then
+      return self.privates.queue[i]
+    end
+  end
+end)
+
 return queue

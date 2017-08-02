@@ -9,10 +9,16 @@ local test_queue = queue {
 assert(test_queue.length == 0)
 test_queue:push("A")
 assert(test_queue.length == 1)
+
+for val in ipairs(test_queue) do
+  assert(val == "A")
+end
+
 test_queue:push("B")
 assert(test_queue.length == 2)
 _ = test_queue + "C"
 assert(test_queue.length == 3)
+
 assert(test_queue:pop() == "A")
 assert(test_queue.length == 2)
 assert(test_queue:pop() == "B")
