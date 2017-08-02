@@ -175,6 +175,7 @@ function class.proto()
         self.__overloads[name] = signature.proto()
       end
 
+      sig_table = class_util.prepend(sig_table, self.__name)
       local sig = class_util.signature_from_table(sig_table)
       if self.__overloads[name].__sigs[sig] then
         error(errors.SIGNATURE_EXISTS)

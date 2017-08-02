@@ -55,11 +55,11 @@ queue:set_meta("unm", function (self)
   return self:pop()
 end)
 
-queue:add_overloaded_method("overloaded", {"table", "string"}, function (self, s)
+queue:add_overloaded_method("overloaded", {"string"}, function (self, s)
   return s
 end)
 
-queue:add_overloaded_method("overloaded", {"table", "string", "number"}, function (self, s, n)
+queue:add_overloaded_method("overloaded", {"string", "number"}, function (self, s, n)
   local t = {}
   for i = 1, n do
     t[i] = s
