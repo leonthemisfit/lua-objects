@@ -80,4 +80,12 @@ function class_util.signature(...)
   return class_util.signature_from_table(tbl)
 end
 
+function class_util.prepend(tbl, val)
+  local ntbl = {val}
+  for _,v in ipairs(tbl) do
+    ntbl[#ntbl+1] = v
+  end
+  return ntbl
+end
+
 return class_util

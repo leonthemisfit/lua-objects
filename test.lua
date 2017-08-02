@@ -73,3 +73,5 @@ assert(class.type(casted) == "string")
 assert(casted == "Hello, world!")
 
 assert(test_queue.privates == nil)
+
+assert(class_util.prepend({}, "")[1] == "")
