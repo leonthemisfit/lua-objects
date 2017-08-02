@@ -135,7 +135,7 @@ function class.proto()
       self:add_custom_property(name, val, getter, defaults.READONLY)
     end,
 
-    add_readdonly_property = function (self, name, val)
+    add_readonly_property = function (self, name, val)
       self:add_custom_readonly_property(name, val, defaults.GETTER)
     end,
 
