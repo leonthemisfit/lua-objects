@@ -67,13 +67,7 @@ end
 
 local class = {}
 
-function class.type(obj)
-  if type(obj) == "table" and obj.__name then
-    return obj.__name
-  else
-    return type(obj)
-  end
-end
+class.type = class_util.type
 
 function class.proto()
   local proto = {

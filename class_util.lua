@@ -58,10 +58,19 @@ function class_util.list(tbl)
   end
 end
 
+function class_util.type(obj)
+  if type(obj) == "table" and obj.__name then
+    return obj.__name
+  else
+    return type(obj)
+  end
+end
+
 class_util.sig_separator = "."
 function class_util.signature_from_table(tbl)
   return table.concat(tbl, class_util.sig_separator)
 end
+
 
 function class_util.signature(...)
   local tbl = {}
