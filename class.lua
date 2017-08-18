@@ -279,7 +279,8 @@ function class.proto()
       if self.__infix[oper] then
         error(errors.INFIX_EXISTS)
       else
-        self.__infix[oper] = func
+        local caller = self:__get_caller(func)
+        self.__infix[oper] = caller
       end
     end,
 
