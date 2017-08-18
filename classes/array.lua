@@ -63,6 +63,28 @@ array:add_method("iter", function (self)
   end
 end)
 
+array:add_method("foreach", function (self, func)
+  local i = 0
+  return function ()
+    i = i + 1
+    if i <= self.length then
+      return self[i]
+    end
+  end
+end)
+
+array:add_method("table_map", function (self, func)
+  local t = {}
+  for i,v in self:iter() do
+    t[i] = func(v)
+  end
+  return t
+end)
+
+array:add_method("map", function (self, func)
+  return array(self:table_map(func))
+end)
+
 array:set_meta("ipairs", function (self)
   return self:iter()
 end)
