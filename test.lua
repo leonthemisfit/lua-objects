@@ -1,6 +1,7 @@
 local queue = require("queue")
 local class_util = require("class_util")
 local class = require("class")
+local any = require("any")
 
 local test_queue = queue {
   test = "hunter2"
@@ -81,3 +82,6 @@ assert(casted == "Hello, world!")
 assert(test_queue.privates == nil)
 
 assert(class_util.prepend({}, "")[1] == "")
+
+assert(test_queue:overloaded(any("test")) == "test")
+assert(test_queue:overloaded(any(1)) == "1")

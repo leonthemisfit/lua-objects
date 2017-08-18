@@ -67,6 +67,14 @@ queue:add_overloaded_method("overloaded", {"string", "number"}, function (self, 
   return table.concat(t, " ")
 end)
 
+queue:add_overloaded_method("overloaded", {"any"}, function (self, val)
+  if val 'is' "string" then
+    return val.value
+  elseif val 'is' "number" then
+    return tostring(val.value)
+  end
+end)
+
 queue:add_cast("string", function (self)
   return "Hello, world!"
 end)
