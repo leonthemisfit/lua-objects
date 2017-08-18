@@ -1,6 +1,6 @@
-local class = require("class")
-local class_util = require("class_util")
-local any = require("any")
+local class = require("../class")
+local class_util = require("../class_util")
+local any = require("../classes/any")
 
 local function next_index(tbl, index)
   while tbl[index] ~= nil do

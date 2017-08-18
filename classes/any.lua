@@ -1,5 +1,5 @@
-local class = require("class")
-local class_util = require("class_util")
+local class = require("../class")
+local class_util = require("../class_util")
 
 local any = class("any")
 
