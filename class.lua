@@ -11,7 +11,9 @@ local errors = {
   INVALID_META = "The metafunction name provided is not valid.",
   META_NOT_FUNCTION = "Only functions may be set for meta values.",
   DUPLICATE_CAST = "A cast to the specified type has already been adedded.",
-  INVALID_CAST = "Attempt to cast to a type without a cast function specified."
+  INVALID_CAST = "Attempt to cast to a type without a cast function specified.",
+  INVALID_INFIX = "The infix function used does not exist on object.",
+  INFIX_EXISTS = "The infix specified already exists."
 }
 
 local defaults = {
@@ -83,6 +85,7 @@ function class.proto()
     __inheritors = {},
     __locks = {},
     __casts = {},
+    __infix = {},
     __name = "",
     privates = nil,
 
@@ -96,6 +99,16 @@ function class.proto()
           rawset(self, "privates", nil)
         end
         return res
+      end
+    end,
+
+    __infix_caller = function (self, oper)
+      if self.__infix[oper] then
+        return function (right)
+          return self.__infix[oper](self, right)
+        end
+      else
+        error(errors.INVALID_INFIX)
       end
     end,
 
@@ -233,7 +246,7 @@ function class.proto()
     end,
 
     is_instance = function (self, tbl)
-      return getmetatable(self) == getmetatable(tbl)
+      return self.__name == tbl.__name
     end,
 
     is_inherited = function (self, obj)
@@ -262,8 +275,17 @@ function class.proto()
       end
     end,
 
+    add_infix_method = function (self, oper, func)
+      if self.__infix[oper] then
+        error(errors.INFIX_EXISTS)
+      else
+        self.__infix[oper] = func
+      end
+    end,
+
     new = function (self, ...)
       local obj = {}
+
       obj.__name = self.__name
       obj.__variables = class_util.deep_copy(self.__variables)
       obj.__getters = class_util.deep_copy(self.__getters)
@@ -278,9 +300,13 @@ function class.proto()
       obj.__locks = {}
       obj.__get_caller = self.__get_caller
       obj.cast = self.cast
+      obj.__infix = class_util.deep_copy(self.__infix)
       obj.__indexed =
         {obj.__getters, obj.__methods, obj.__static, obj.__overloads}
-      setmetatable(obj, getmetatable(self))
+
+      local mt = class_util.deep_copy(getmetatable(self))
+      mt.__call = self.__infix_caller
+      setmetatable(obj, mt)
 
       local sig = class_util.signature(...)
       if obj.__constructors[sig] then
