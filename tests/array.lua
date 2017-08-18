@@ -70,4 +70,24 @@ for v in f:foreach() do
   assert(v == i * 2)
 end
 
+local g = array {
+  array {1, 2, 3},
+  array {"a", "b", "c"}
+}
+
+assert(g.type == "array")
+assert(g.length == 2)
+
+assert(g[1].type == "number")
+assert(g[1].length == 3)
+assert(g[1][1] == 1)
+assert(g[1][2] == 2)
+assert(g[1][3] == 3)
+
+assert(g[2].type == "string")
+assert(g[2].length == 3)
+assert(g[2][1] == "a")
+assert(g[2][2] == "b")
+assert(g[2][3] == "c")
+
 print("class 'array' tests passed")
