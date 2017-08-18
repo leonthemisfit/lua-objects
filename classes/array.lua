@@ -85,6 +85,14 @@ array:add_method("map", function (self, func)
   return array(self:table_map(func))
 end)
 
+array:add_overloaded_method("slice", {"number"}, function (self, x)
+  return array(class_util.slice(self.privates.table, x))
+end)
+
+array:add_overloaded_method("slice", {"number", "number"}, function (self, x, y)
+  return array(class_util.slice(self.privates.table, x, y))
+end)
+
 array:set_meta("ipairs", function (self)
   return self:iter()
 end)
