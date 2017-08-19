@@ -19,4 +19,10 @@ assert(b 'is' "any")
 assert(b:is(any))
 assert(b:is("any"))
 
+local c = any("a")
+
+assert(c == any("a"))
+assert(c:equals("a"))
+assert(c 'eq' "a")
+
 print("class 'any' tests passed")
