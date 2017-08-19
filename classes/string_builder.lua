@@ -34,12 +34,27 @@ string_builder:add_overloaded_method("prepend", {"string_builder"}, function (se
   return self:prepend(s.string)
 end)
 
+string_builder:add_method("equals", function (self, s)
+  local t = class.type(s)
+  if t == "string_builder" then
+    return self.string == s.string
+  elseif t == "string" then
+    return self.string == s
+  else
+    error(errors.TYPE_ERROR)
+  end
+end)
+
 string_builder:add_infix_method("<<", function (self, s)
   return self:prepend(s)
 end)
 
 string_builder:add_infix_method(">>", function (self, s)
   return self:append(s)
+end)
+
+string_builder:add_infix_method("eq", function (self, s)
+  return self:equals(s)
 end)
 
 return string_builder
