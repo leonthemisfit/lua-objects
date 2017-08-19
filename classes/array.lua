@@ -29,6 +29,22 @@ array:add_getter("rest", function (self)
   return array(t)
 end)
 
+array:add_getter("unique", function (self)
+  local keys = {}
+  for v in self:foreach() do
+    keys[v] = true
+  end
+
+  local arr = array(self.type, #keys)
+  local i = 1
+  for k, _ in pairs(keys) do
+    arr[i] = k
+    i = i + 1
+  end
+
+  return arr
+end)
+
 array:add_constructor({"string", "number"}, function (self, type_string, length)
   if length > 0 then
     self.privates.length = length
@@ -91,6 +107,90 @@ end)
 
 array:add_overloaded_method("slice", {"number", "number"}, function (self, x, y)
   return array(class_util.slice(self.privates.table, x, y))
+end)
+
+array:add_method("any", function (self, func)
+  for v in self:foreach() do
+    if func(v) then
+      return true
+    end
+  end
+  return false
+end)
+
+array:add_method("any_value", function (self, val)
+  for v in self:foreach() do
+    if v == val then
+      return true
+    end
+  end
+  return false
+end)
+
+array:add_method("all", function (self, func)
+  for v in self:foreach() do
+    if not func(v) then
+      return false
+    end
+  end
+  return true
+end)
+
+array:add_method("all_values", function (self, val)
+  for v in self:foreach() do
+    if v ~= val then
+      return false
+    end
+  end
+  return true
+end)
+
+array:add_method("where", function (self, func)
+  local t = {}
+  for v in self:foreach() do
+    if func(v) then
+      t[#t+1] = v
+    end
+  end
+  if #t > 0 then
+    return array(t)
+  end
+end)
+
+array:add_method("where_value", function (self, val)
+  local t = {}
+  for v in self:foreach() do
+    if v == val then
+      t[#t+1] = v
+    end
+  end
+  if #t > 0 then
+    return array(t)
+  end
+end)
+
+array:add_infix_method("any", function (self, func)
+  return self:any(func)
+end)
+
+array:add_infix_method("any_value", function (self, val)
+  return self:any_value(val)
+end)
+
+array:add_infix_method("all", function (self, func)
+  return self:all(func)
+end)
+
+array:add_infix_method("all_values", function (self, val)
+  return self:all_values(val)
+end)
+
+array:add_infix_method("where", function (self, func)
+  return self:where(func)
+end)
+
+array:add_infix_method("where_value", function (self, val)
+  return self:where_value(val)
 end)
 
 array:set_meta("ipairs", function (self)
