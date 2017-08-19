@@ -1,0 +1,22 @@
+local string_builder = require("../classes/string_builder")
+
+local a = string_builder()
+
+assert(a:prepend("l") == "l")
+assert(a.string == "l")
+assert(a:prepend(string_builder("e")) == "el")
+assert(a.string == "el")
+assert(a '<<' "H" == "Hel")
+assert(a.string == "Hel")
+assert(a:append("l") == "Hell")
+assert(a.string == "Hell")
+assert(a:append(string_builder("o")) == "Hello")
+assert(a.string == "Hello")
+assert(a '>>' "," == "Hello,")
+assert(a.string == "Hello,")
+assert(a '<<' (string_builder(" ")) == " Hello,")
+assert(a.string == " Hello,")
+assert(a '>>' (string_builder(" world! ")) == " Hello, world! ")
+assert(a.string == " Hello, world! ")
+
+print("class 'string_builder' tests passed")
