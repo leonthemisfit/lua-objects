@@ -28,4 +28,20 @@ any:add_method("is", function (self, right)
   end
 end)
 
+any:add_method("equals", function (self, right)
+  if class.type(right) == "any" then
+    return self.value == right.value
+  else
+    return self.value == right
+  end
+end)
+
+any:add_infix_method("eq", function (self, right)
+  return self:equals(right)
+end)
+
+any:set_meta("eq", function (self, right)
+  return self 'eq' (right)
+end)
+
 return any
