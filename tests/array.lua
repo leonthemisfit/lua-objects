@@ -64,10 +64,10 @@ assert(f[1] == 2)
 assert(f[2] == 4)
 assert(f[3] == 6)
 
-local i = 0
+local indx = 0
 for v in f:foreach() do
-  i = i + 1
-  assert(v == i * 2)
+  indx = indx + 1
+  assert(v == indx * 2)
 end
 
 local g = array {
@@ -89,5 +89,48 @@ assert(g[2].length == 3)
 assert(g[2][1] == "a")
 assert(g[2][2] == "b")
 assert(g[2][3] == "c")
+
+local h = array { 1, 2, 2, 3, 4, 4, 5 }
+
+local function even(n)
+  return n % 2 == 0
+end
+
+local function gtzero(n)
+  return n > 0
+end
+
+assert(h.type == "number")
+assert(h.length == 7)
+
+assert(h:any(even))
+assert(h 'any' (even))
+assert(h:any_value(1))
+assert(h 'any_value' (1))
+
+assert(h:all(gtzero))
+assert(h 'all' (gtzero))
+assert(h:all_values(1) == false)
+assert(h 'all_values' (1) == false)
+
+local i = h 'where' (even)
+
+assert(i.type == "number")
+assert(i.length == 4)
+
+local j = h 'where_value' (2)
+
+assert(j.type == "number")
+assert(j.length == 2)
+
+local k = h.unique
+
+assert(k.type == "number")
+assert(k.length == 5)
+assert(k[1] == 1)
+assert(k[2] == 2)
+assert(k[3] == 3)
+assert(k[4] == 4)
+assert(k[5] == 5)
 
 print("class 'array' tests passed")
