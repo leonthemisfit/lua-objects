@@ -23,4 +23,10 @@ assert(a:equals(string_builder(" Hello, world! ")))
 assert(a 'eq' " Hello, world! ")
 assert(a 'eq' (string_builder(" Hello, world! ")))
 
+local b = string_builder("Hello, ${place}!")
+
+assert(b.string == "Hello, ${place}!")
+assert(b:interpolate {place = "World"} == "Hello, World!")
+assert(b '$' {place = "World"} == "Hello, World!")
+
 print("class 'string_builder' tests passed")
