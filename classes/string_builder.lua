@@ -45,6 +45,17 @@ string_builder:add_method("equals", function (self, s)
   end
 end)
 
+string_builder:add_method("interpolate", function (self, t)
+  local p = "($%b{})"
+
+  local function word(w)
+    local s = w:sub(3, -2)
+    return t[s] or w
+  end
+
+  return self.string:gsub(p, word)
+end)
+
 string_builder:add_infix_method("<<", function (self, s)
   return self:prepend(s)
 end)
@@ -55,6 +66,10 @@ end)
 
 string_builder:add_infix_method("eq", function (self, s)
   return self:equals(s)
+end)
+
+string_builder:add_infix_method("$", function (self, t)
+  return self:interpolate(t)
 end)
 
 return string_builder
