@@ -56,7 +56,7 @@ enum:add_overloaded_method("add_value", {"any", "string"}, function (self, val, 
 end)
 
 enum:add_infix_method("add", function (self, tbl)
-  return self:add_value(any(tbl[1]), table.unpack(class_util.rest(tbl)))
+  return self:add_value(any(tbl[1]), class_util.unpack(class_util.rest(tbl)))
 end)
 
 local mt = getmetatable(enum)
