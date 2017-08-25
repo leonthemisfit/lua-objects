@@ -220,6 +220,8 @@ function class.proto()
 
       self.__inheritors[obj.__name] = true
 
+      setmetatable(self, getmetatable(obj))
+
       for i,tbl in ipairs(obj.__inherited) do
         for k,v in pairs(tbl) do
           if tbl == obj.__getters then
@@ -239,6 +241,8 @@ function class.proto()
             end
           elseif tbl == obj.__inheritors then
             self.__inheritors[k] = true
+          elseif tbl == obj.__constructors then
+            self:add_constructor(class_util.split(k, class_util.sig_separator), v)
           end
         end
       end
@@ -338,7 +342,7 @@ function class.proto()
     {proto.__getters, proto.__methods, proto.__static, proto.__overloads}
   proto.__inherited =
     {proto.__getters, proto.__setters, proto.__variables, proto.__methods,
-     proto.__static, proto.__overloads}
+     proto.__static, proto.__overloads, proto.__constructors}
   return proto
 end
 
