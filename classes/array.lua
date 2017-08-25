@@ -197,6 +197,10 @@ array:set_meta("ipairs", function (self)
   return self:iter()
 end)
 
+array:set_meta("len", function (self)
+  return self.length
+end)
+
 array:add_cast("table", function (self)
   return self.privates.table
 end)
