@@ -32,9 +32,11 @@ assert(b '$' {place = "World"} == "Hello, World!")
 local c = string_builder("test")
 
 assert(c.length == 4)
-assert(#c == 4)
 assert(c '>>' "ing" == "testing")
 assert(c.length == 7)
-assert(#c == 7)
+
+if _VERSION ~= "Lua 5.1" then
+  assert(#c == 7)
+end
 
 print("class 'string_builder' tests passed")
