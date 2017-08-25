@@ -29,4 +29,12 @@ assert(b.string == "Hello, ${place}!")
 assert(b:interpolate {place = "World"} == "Hello, World!")
 assert(b '$' {place = "World"} == "Hello, World!")
 
+local c = string_builder("test")
+
+assert(c.length == 4)
+assert(#c == 4)
+assert(c '>>' "ing" == "testing")
+assert(c.length == 7)
+assert(#c == 7)
+
 print("class 'string_builder' tests passed")
