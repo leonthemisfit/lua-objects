@@ -87,4 +87,20 @@ function class_util.prepend(tbl, val)
   return ntbl
 end
 
+function class_util.pack(...)
+  local n = select("#", ...)
+  local t = {}
+  for i = 1, n do
+    t[i] = select(i, ...)
+  end
+  return t
+end
+
+function class_util.unpack(t)
+  if #t > 0 then
+    local v = table.remove(t, 1)
+    return v, class_util.unpack(t)
+  end
+end
+
 return class_util

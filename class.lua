@@ -319,7 +319,7 @@ function class.proto()
         local caller = obj.__get_caller(obj, func)
         caller(obj, ...)
       elseif sig == "table" then
-        local params = table.pack(...)
+        local params = class_util.pack(...)
         for prop,val in pairs(params[1]) do
           if not obj.__setters[prop] then
             error(errors.PARAM_ERROR)
