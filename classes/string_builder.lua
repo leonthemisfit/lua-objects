@@ -8,6 +8,10 @@ local string_builder = class("string_builder")
 
 string_builder:add_readonly_property("string", "")
 
+string_builder:add_getter("length", function (self)
+  return string.len(self.string)
+end)
+
 string_builder:add_constructor({"string"}, function (self, s)
   if class.type(s) == "string" then
     self.privates.string = s
@@ -54,6 +58,10 @@ string_builder:add_method("interpolate", function (self, t)
   end
 
   return self.string:gsub(p, word)
+end)
+
+string_builder:set_meta("len", function (self)
+  return self.length
 end)
 
 string_builder:add_infix_method("<<", function (self, s)
