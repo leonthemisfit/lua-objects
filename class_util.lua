@@ -88,6 +88,10 @@ function class_util.prepend(tbl, val)
 end
 
 function class_util.pack(...)
+  if table.pack then
+    return table.pack(...)
+  end
+
   local n = select("#", ...)
   local t = {}
   for i = 1, n do
@@ -97,6 +101,10 @@ function class_util.pack(...)
 end
 
 function class_util.unpack(t)
+  if table.unpack then
+    return table.unpack(t)
+  end
+  
   if #t > 0 then
     local v = table.remove(t, 1)
     return v, class_util.unpack(t)
